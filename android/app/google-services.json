@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "623961699993",
+    "project_id": "socialzeal-3f17b",
+    "storage_bucket": "socialzeal-3f17b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623961699993:android:23a9bef047d509ebe82a08",
+        "android_client_info": {
+          "package_name": "com.socialzeal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "623961699993-pa5atji4eneppabfm2kgc3tdt1fetu4b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.socialzeal",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "623961699993-kmtg0vc22u5cqqf0vksvp0q3dl306d96.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOpYl9l8JJiRXbw5XfWGeveFiBOrkxTTE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "623961699993-kmtg0vc22u5cqqf0vksvp0q3dl306d96.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
