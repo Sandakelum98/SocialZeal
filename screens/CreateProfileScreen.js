@@ -28,7 +28,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {StatusWrapper,} from '../styles/AddPost';
 
-const CreateProfileScreen = () => {
+const CreateProfileScreen = ( {navigation} ) => {
 
 //   const {user, logout} = useContext(AuthContext);
   const [image, setImage] = useState(null);
@@ -56,17 +56,24 @@ const CreateProfileScreen = () => {
     })
     .then(() => {
         console.log('User Added!');
-        Alert.alert(
-          'Created!',
-          'User account created!User account created!',
-        );
-        setPost(null);
-        navigation.replace('DashboardScreen');
+        // Alert.alert(
+        //   'Created!',
+        //   'User account created!User account created!',
+        // );
+        // setPost(null);
+        // navigation.replace('DashboardScreen');
+         
+        navigateToDashboard();
+
       })
       .catch((error) => {
         console.log('Something went wrong with added user to firestore. ', error);
         throw error;
       });
+  }
+
+  const navigateToDashboard = async () => {
+    navigation.replace('DashboardScreen');
   }
 
   const uploadImage = async () => {
@@ -130,7 +137,6 @@ const CreateProfileScreen = () => {
       console.log('Can not Get data from async ')
     }
   }
-
 
   const takePhotoFromCamera = () => {
     ImagePicker.openCamera({

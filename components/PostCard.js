@@ -11,6 +11,7 @@ import {
 import { Item } from 'react-native-paper/lib/typescript/components/List/List';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
+import firestore from '@react-native-firebase/firestore';
 
 import {
     Container,
@@ -31,6 +32,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 const PostCard = ({ item, onPress }) => {
+    const [userData, setUserData] = useState(null);
 
     var likeIcon = item.liked ? 'heart' : 'heart-outline';
     var likeIconColor = item.liked ? '#2e64e5' : '#333';
@@ -53,10 +55,44 @@ const PostCard = ({ item, onPress }) => {
         commentText = 'Comment';
     }
 
+    //get user details
+  const getUser = async() => {
+    // console.log('start get user');
+    // const userId = await getLoggedUser();
+    // console.log('getLoggedUser ', userId);
+
+    const subscriber = firestore()
+    .collection('users')
+    .onSnapshot(querySnapshot => {
+      const customers = [];
+
+      querySnapshot.forEach(documentSnapshot => {
+        // console.log(documentSnapshot.data().userId);
+        // console.log(userId);
+        if(documentSnapshot.data().userId === item.userId) {
+        //   console.log(documentSnapshot.data());
+          setUserData(documentSnapshot.data());
+          return;
+        }
+      });
+    });
+  }
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
     return (
         <Card>
             <UserInfo>
-                <UserImg source={{uri: item.userImg}} />
+                <UserImg 
+                    source={{
+                        uri: userData
+                          ? userData.userImg ||
+                            'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
+                          : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+                      }}
+                />
                 <UserInfoText>
                     {/* <TouchableOpacity 
                         onPress={ 
@@ -64,7 +100,9 @@ const PostCard = ({ item, onPress }) => {
                             console.log('click profile')
                         }
                     > */}
-                        <UserName>{item.userName}</UserName>
+                        <UserName>
+                            {userData ? userData.name || 'Test User' : 'Test User'}
+                        </UserName>
                     {/* </TouchableOpacity> */}
                     
                     <PostTime>{moment(item.postTime.toDate()).fromNow()}</PostTime>

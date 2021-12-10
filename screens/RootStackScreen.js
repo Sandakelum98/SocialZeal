@@ -8,6 +8,7 @@ import SplashScreen from './SplashScreen';
 import SignInScreen from './SignInScreen';
 import SignUpScreen from './SignUpScreen';
 import CreateProfileScreen from './CreateProfileScreen';
+import EditProfileScreen from './EditProfileScreen';
 
 import HomeScreen from './HomeScreen';
 import NotificationScreen from './NotificationScreen';
@@ -15,8 +16,6 @@ import ProfileScreen from './ProfileScreen';
 
 import DashboardScreen from './DashboardScreen';
 import Routes from '../navigation/Routes';
-
-import AuthDetails from '../navigation/AuthDetails';
 
 const RootStack = createStackNavigator();
 
@@ -84,6 +83,7 @@ const RootStackScreen = ({ navigation }) => {
         <RootStack.Screen name="SignUpScreen" component={SignUpScreen}/>
         <RootStack.Screen name="DashboardScreen" component={DashboardScreen}/>
         <RootStack.Screen name="CreateProfileScreen" component={CreateProfileScreen}/>
+        <RootStack.Screen name="EditProfileScreen" component={EditProfileScreen}/>
     </RootStack.Navigator>
 
     // <View>

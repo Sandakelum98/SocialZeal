@@ -11,6 +11,7 @@ import {
 import FormButton from '../components/FormButton';
 // import {AuthContext} from '../navigation/AuthProvider';
 
+import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PostCard from '../components/PostCard';
@@ -26,7 +27,7 @@ const ProfileScreen = ({navigation, route}) => {
 
   const fetchPosts = async () => {
     const userId = await getLoggedUser();
-    console.log(userId);
+    //console.log(userId);
     try {
       const list = [];
 
@@ -36,6 +37,7 @@ const ProfileScreen = ({navigation, route}) => {
         .orderBy('postTime', 'desc')
         .get()
         .then((querySnapshot) => {
+
           // console.log('Total Posts: ', querySnapshot.size);
 
           querySnapshot.forEach((doc) => {
@@ -69,28 +71,38 @@ const ProfileScreen = ({navigation, route}) => {
         setLoading(false);
       }
 
-      console.log('Posts: ', posts);
+      //console.log('Posts: ', posts);
     } catch (e) {
       console.log(e);
     }
   };
 
+  //get user details
   const getUser = async() => {
-    await firestore()
+    // console.log('start get user');
+    const userId = await getLoggedUser();
+    // console.log('getLoggedUser ', userId);
+
+    const subscriber = firestore()
     .collection('users')
-    .doc( route.params ? route.params.userId : user.uid)
-    .get()
-    .then((documentSnapshot) => {
-      if( documentSnapshot.exists ) {
-        console.log('User Data', documentSnapshot.data());
-        setUserData(documentSnapshot.data());
-      }
-    })
+    .onSnapshot(querySnapshot => {
+      const customers = [];
+
+      querySnapshot.forEach(documentSnapshot => {
+        console.log(documentSnapshot.data().userId);
+        console.log(userId);
+        if(documentSnapshot.data().userId === userId) {
+          console.log(documentSnapshot.data());
+          setUserData(documentSnapshot.data());
+          return;
+        }
+      });
+    });
   }
 
   useEffect(() => {
-    // getUser();
-    console.log('useEffect working !')
+    console.log('useEffect working !');
+    getUser();
     fetchPosts();
     navigation.addListener("focus", () => setLoading(!loading));
   }, [navigation, loading]);
@@ -100,12 +112,47 @@ const ProfileScreen = ({navigation, route}) => {
   //GET USER FROM ASYNC STORAGE
   const getLoggedUser = async () => {
     try {
-
       return AsyncStorage.getItem('loggedUser');
-    
     } catch (e) {
       console.log('Can not Get data from async ')
     }
+  }
+
+  //logout
+  const logoutUser = async () => {
+    auth()
+    .signOut()
+    .then(() => { 
+      console.log('User signed out!');
+
+       logout();
+      // try {
+      //   AsyncStorage.removeItem('loggedUser');
+      //   console.log('deleted data from async');
+      //   this.getLoggedUser().then(loggedUser=>{
+      //     if(loggedUser != null) {
+      //       alert('Not Logout !');
+      //     } else {
+      //       navigation.replace('SignInScreen');
+      //     }
+      //   });
+      // } catch(e) {
+      //   console.log('Can not delete data from async');
+      // }
+
+    });
+  }
+
+  //LOGOUT
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem('loggedUser');
+      console.log('deleted data from async');
+      navigation.replace('SignInScreen');
+    } catch(e) {
+      console.log('Can not delete data from async');
+    }
+    //console.log('Done.');
   }
 
   return (
@@ -116,17 +163,17 @@ const ProfileScreen = ({navigation, route}) => {
         showsVerticalScrollIndicator={false}>
         <Image
           style={styles.userImg}
-          // source={{uri: userData ? userData.userImg || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg' : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
-          source={require('../assets/users/user-8.jpg')}
+          source={{uri: userData ? userData.userImg || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg' : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
+          // source={require('../assets/users/user-8.jpg')}
         />
-        {/* <Text style={styles.userName}>{userData ? userData.fname || 'Test' : 'Test'} {userData ? userData.lname || 'User' : 'User'}</Text> */}
-        <Text style={styles.userName}>Jenny Deo</Text>
+        <Text style={styles.userName}>{userData ? userData.name || 'Test User' : 'Test User'}</Text>
+        {/* <Text style={styles.userName}>Jenny Deo</Text> */}
 
         {/* <Text>{route.params ? route.params.userId : user.uid}</Text> */}
 
         <Text style={styles.aboutUser}>
-        {/* {userData ? userData.about || 'No details added.' : ''} */}
-        1 new job in Kegalle District, Sabaragamuwa, Sri Lanka matches your preferences.
+        {userData ? userData.about || 'No details added.' : ''}
+        {/* 1 new job in Kegalle District, Sabaragamuwa, Sri Lanka matches your preferences. */}
         </Text>
 
         <View style={styles.userBtnWrapper}>
@@ -154,11 +201,17 @@ const ProfileScreen = ({navigation, route}) => {
             </>
           )} */}
 
-            <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
-                <Text style={styles.userBtnTxt}>Message</Text>
+            <TouchableOpacity style={styles.userBtn} onPress={() => {
+                // navigation.navigate('EditProfileScreen');
+            }}>
+                <Text style={styles.userBtnTxt}>Edit Profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.userBtn} onPress={() => { console.log("follow workig") }}>
-                <Text style={styles.userBtnTxt}>Follow</Text>
+            <TouchableOpacity style={styles.userBtn} 
+            onPress={() => { 
+              console.log("logout workig");
+              logoutUser();
+            }}>
+                <Text style={styles.userBtnTxt}>Logout</Text>
             </TouchableOpacity>
 
         </View>
@@ -166,7 +219,7 @@ const ProfileScreen = ({navigation, route}) => {
         <View style={styles.userInfoWrapper}>
           <View style={styles.userInfoItem}>
             {/* <Text style={styles.userInfoTitle}>{posts.length}</Text> */}
-            <Text style={styles.userInfoTitle}>22</Text>
+            <Text style={styles.userInfoTitle}>{posts.length}</Text>
             <Text style={styles.userInfoSubTitle}>Posts</Text>
           </View>
           <View style={styles.userInfoItem}>

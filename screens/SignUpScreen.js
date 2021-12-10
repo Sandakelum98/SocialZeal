@@ -126,7 +126,8 @@ const SignUpScreen = ({ navigation }) => {
             .then((user) => {
                 console.log('User account created & signed in!');
                 storeData(user.user.uid);
-                navigation.replace('DashboardScreen');
+                navigation.navigate('CreateProfileScreen'); 
+                // navigation.replace('DashboardScreen');
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {
@@ -167,7 +168,7 @@ const SignUpScreen = ({ navigation }) => {
         const user =  auth().signInWithCredential(googleCredential);
 
         storeData((await user).user.uid); 
-        navigation.replace('CreateProfileScreen');     
+        navigation.navigate('CreateProfileScreen');     
     }
 
     //save user in async storage
