@@ -126,7 +126,7 @@ const SignUpScreen = ({ navigation }) => {
             .then((user) => {
                 console.log('User account created & signed in!');
                 storeData(user.user.uid);
-                navigation.navigate('CreateProfileScreen'); 
+                navigation.replace('CreateProfileScreen'); 
                 // navigation.replace('DashboardScreen');
             })
             .catch(error => {
